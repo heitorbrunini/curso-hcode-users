@@ -12,6 +12,9 @@ class UserController {
             event => {
                 event.preventDefault();
 
+                let btn =  this.formEl.querySelector("[type=submit]");
+                btn.disabled = true;
+
                 //peega os valores do formúlário
                 let values = this.getValues();
 
@@ -20,6 +23,9 @@ class UserController {
                         /*essa função vai receber o conteudo do meu arquivo*/
                         values.photo = content;
                         this.addLine(values);
+
+                        this.formEl.reset();
+                        btn.disabled = false;
                     },
                     (e) => {
                         alert(e);
