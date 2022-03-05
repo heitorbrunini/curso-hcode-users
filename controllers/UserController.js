@@ -17,6 +17,7 @@ class UserController {
 
                 //peega os valores do formúlário
                 let values = this.getValues();
+                if (!values) return false;
 
                 this.getPhoto().then(
                     (content) => {
@@ -108,6 +109,8 @@ class UserController {
     addLine(dataUser) {
         let tr = document.createElement('tr');
 
+        tr.dataset.user = JSON.stringify(dataUser);
+        
         tr.innerHTML = `
             <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
             <td>${dataUser.name}</td>
@@ -120,7 +123,20 @@ class UserController {
             </td>`;
         this.tableEl.appendChild(tr);
         
-        
+    }
+
+    updateCount(){
+       let numbersUsers = 0;
+       let numberAdmin = 0;
+       [...this.tableEl.children].forEach( tr => {
+            numbersUsers++;
+            let user = JSON.parse (tr.dataset.user);
+            if (user._admin) numberAdmin ++;  
+        });
+        //
+
+        document.querySelector("#number-users-admin").innerHTML = numberAdmin;
+        document.querySelector("#number-users").innerHTML = numbersUsers;
     }
 
 
