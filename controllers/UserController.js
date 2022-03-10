@@ -6,6 +6,7 @@ class UserController {
         this.tableEl = document.getElementById(tableId);
         this.onSubmit();
         this.onEdit();
+        this.selectAll();
     }
 
     onEdit() {
@@ -76,8 +77,9 @@ class UserController {
 
                 this.getPhoto(this.formElCreate).then(
                     (content) => {
-                        /*essa função vai receber o conteudo do meu arquivo*/
                         values.photo = content;
+
+                        this.insert(values);
                         this.addLine(values);
 
                         this.formElCreate.reset();
@@ -122,9 +124,37 @@ class UserController {
             user.photo, user.admin
         );
     }
+    
+    getUserStorage(){
+        let users = [];
+        //already have users
+        if (sessionStorage.getItem("users")){
+            users = JSON.parse(sessionStorage.getItem("users"));
+        }
+        return users;
+    }
+
+    selectAll(){
+        let users = this.getUserStorage();
+        users.forEach(
+            dataUser => {
+                let user = new User();
+                user.loadFromJSON(dataUser);
+                this.addLine(user);
+            }
+        )
+    }
+
+
+    insert(data){
+        let users = this.getUserStorage();
+        users.push(data);
+
+        sessionStorage.setItem("users", JSON.stringify(users));
+    }
 
     addLine(dataUser) {
-        let tr = document.createElement('tr');
+        let tr = document.createElement('tr');    
 
         tr.dataset.user = JSON.stringify(dataUser);
 
@@ -153,7 +183,6 @@ class UserController {
                 this.updateCount();
             }
         }
-
 
         )
 
