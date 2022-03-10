@@ -27,7 +27,7 @@ class UserController {
                 let tr = this.tableEl.rows[index];
 
                 let result = Object.assign({}, JSON.parse(tr.dataset.user), values)
-                
+
                 tr.dataset.user = JSON.stringify(values);
 
                 this.updateCount();
@@ -37,17 +37,17 @@ class UserController {
                 this.getPhoto(this.formElUpdate).then(
                     (content) => {
                         /*check if have a new content, else, result._photo get the old photo*/
-                        values.photo? result._photo = content : result._photo = JSON.parse(tr.dataset.user)._photo;
+                        values.photo ? result._photo = content : result._photo = JSON.parse(tr.dataset.user)._photo;
 
                         tr.innerHTML = `
-                            <td><img src="${result.photo}" alt="User Image" class="img-circle img-sm"></td>
+                            <td><img src="${result._photo}" alt="User Image" class="img-circle img-sm"></td>
                             <td>${result._name}</td>
                             <td>${result._email}</td>
                             <td>${result._admin ? 'Sim' : 'Não'}</td>
                             <td>${Utils.dataFormat(result._register)}</td>
                             <td>
                                 <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-                                <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+                                <button type="button" class="btn btn-delete btn-danger btn-xs btn-flat">Excluir</button>
                             </td>
                         `;
                         this.formElUpdate.reset();
@@ -136,7 +136,7 @@ class UserController {
             <td>${Utils.dataFormat(dataUser.register)}</td>
             <td>
                 <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-                <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+                <button type="button" class="btn btn-delete btn-danger btn-xs btn-flat">Excluir</button>
             </td>`;
 
         this.addEventsTr(tr);
@@ -146,6 +146,17 @@ class UserController {
 
     addEventsTr(tr) {
         //edit data from old user
+
+        tr.querySelector(".btn-delete").addEventListener("click", e => {
+            if (confirm("Deseja realmente excluir?")) {
+                tr.remove();
+                this.updateCount();
+            }
+        }
+
+
+        )
+
         tr.querySelector(".btn-edit").addEventListener("click",
             e => {
                 let json = JSON.parse(tr.dataset.user);
