@@ -40,6 +40,8 @@ class UserController {
                         let user = new User();
                         user.loadFromJSON(result);
 
+                        user.save();
+
                         this.getTr(user, tr);
 
                         this.formElUpdate.reset();
@@ -62,17 +64,20 @@ class UserController {
                 let btn = this.formElCreate.querySelector("[type=submit]");
                 btn.disabled = true;
 
-                //values from form
+                /*User values from form*/
                 let values = this.getValues(this.formElCreate);
                 if (!values) return false;
 
                 this.getPhoto(this.formElCreate).then(
+                    /*sucess with file, content is the file that getPhoto returns*/ 
                     (content) => {
                         values.photo = content;
 
-                        this.insert(values);
+                        /*method to save himself in localStorage*/
+                        values.save();
                         this.addLine(values);
 
+                        /*finish operation*/
                         this.formElCreate.reset();
                         btn.disabled = false;
                     },
@@ -89,7 +94,7 @@ class UserController {
 
         [...formElCreate.elements].forEach(
             function (field, index) {
-                //form verification
+                /*required fields from form verification*/
                 if (['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value) {
                     field.parentElement.classList.add('has-error');
                     isValid = false;
@@ -118,13 +123,14 @@ class UserController {
 
     getUserStorage() {
         let users = [];
-        //already have users
+        /*already have users*/
         if (localStorage.getItem("users")) {
             users = JSON.parse(localStorage.getItem("users"));
         }
         return users;
     }
 
+    /*Get all Users from Storage and put in the view*/
     selectAll() {
         let users = this.getUserStorage();
         users.forEach(
@@ -135,14 +141,7 @@ class UserController {
             }
         )
     }
-
-    insert(data) {
-        let users = this.getUserStorage();
-        users.push(data);
-
-        localStorage.setItem("users", JSON.stringify(users));
-    }
-
+    
     addLine(dataUser) {
         let tr = this.getTr(dataUser);
         
@@ -170,17 +169,15 @@ class UserController {
     }
 
     addEventsTr(tr) {
-        //edit data from old user
-
+        /*delete user*/
         tr.querySelector(".btn-delete").addEventListener("click", e => {
             if (confirm("Deseja realmente excluir?")) {
                 tr.remove();
                 this.updateCount();
             }
-        }
+        });
 
-        )
-
+        /*edit data from old user*/
         tr.querySelector(".btn-edit").addEventListener("click",
             e => {
                 let json = JSON.parse(tr.dataset.user);
@@ -223,6 +220,7 @@ class UserController {
         document.querySelector("#box-user-update").style.display = "block";
     }
 
+    /*update count from admin and normal users in the view*/
     updateCount() {
         let numbersUsers = 0;
         let numberAdmin = 0;
